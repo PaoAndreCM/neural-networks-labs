@@ -58,3 +58,28 @@ class neuralNetwork:
         # update the weights between the input and the hidden layer
         err = hiddenErrors * hiddenOutputs * (1.-hiddenOutputs)
         self.wih += self.lRate * np.dot(err[:,np.newaxis], inputs[np.newaxis,:])
+
+    def evaluate(self, test_data, test_labels):
+            num_correct_predictions = 0
+
+            for i, test_label in enumerate(test_labels):
+                prediction = self.query(test_data[i])  # query the network
+
+                # Compare index of the largest element in `prediction` with label
+                if test_label == np.argmax(prediction):
+                    num_correct_predictions += 1
+
+            performance = num_correct_predictions / len(test_labels)
+            return performance
+    
+    def saveWeights(self, base_path):
+        wih_filename = 'wih.npy'
+        who_filename = 'who.npy'
+        np.save(base_path + wih_filename,self.wih)
+        np.save(base_path + who_filename,self.who)
+
+    def restoreWeights(self, weights_path):
+        wih_filename = 'wih.npy'
+        who_filename = 'who.npy'
+        self.wih = np.load(weights_path+wih_filename)
+        self.who = np.load(weights_path+who_filename)
