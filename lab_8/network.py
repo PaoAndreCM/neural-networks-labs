@@ -58,3 +58,55 @@ class neuralNetwork:
         # update the weights between the input and the hidden layer
         err = hiddenErrors * hiddenOutputs * (1.-hiddenOutputs)
         self.wih += self.lRate * np.dot(err[:,np.newaxis], inputs[np.newaxis,:])
+
+    def evaluate(self, test_data, test_labels):
+            '''
+            Evaluate the performance of the neural network on a test dataset.
+
+            Parameters:
+            - test_data (list or array): Input data for testing.
+            - test_labels (list or array): Corresponding labels for the test data.
+
+            Returns:
+            - performance (float): The accuracy of the neural network on the provided test dataset,
+            calculated as the ratio of correct predictions to the total number of test samples.
+
+            Usage:
+            1. Instantiate an object of the neural network class.
+            2. Train the neural network using the `train` method.
+            3. Call this method with the test data and labels to evaluate the network's performance.
+            '''
+            num_correct_predictions = 0
+
+            for i, test_label in enumerate(test_labels):
+                prediction = self.query(test_data[i])  # query the network
+
+                # Compare index of the largest element in `prediction` with label
+                if test_label == np.argmax(prediction):
+                    num_correct_predictions += 1
+
+            performance = num_correct_predictions / len(test_labels)
+            return performance
+    
+    def saveWeights(self, base_path):
+        wih_filename = 'wih.npy'
+        who_filename = 'who.npy'
+        np.save(base_path + wih_filename,self.wih)
+        np.save(base_path + who_filename,self.who)
+
+    def restoreWeights(self, weights_path):
+        wih_filename = 'wih.npy'
+        who_filename = 'who.npy'
+        self.wih = np.load(weights_path+wih_filename)
+        self.who = np.load(weights_path+who_filename)
+
+    def batchTrain(self, train_data, train_labels):
+        for i, label in enumerate(train_labels):
+            # create target vector
+            target = np.zeros(10, dtype='float') + 0.01 # Set the target vector
+            target[label] = 0.99
+
+            # feed image with target vector into method `train`
+            self.train(train_data[i], target)
+
+
