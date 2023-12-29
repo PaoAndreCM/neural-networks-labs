@@ -3,6 +3,11 @@ import numpy as np
 def sigmoid(X):
     return 1/(1+np.exp(-X))
 
+def softmax(arr):
+    numerator = np.exp(arr)
+    denominator = np.sum(np.exp(arr))
+    return (numerator / denominator)
+
 class neuralNetwork:
     def __init__(self, iNodes, hNodes, oNodes, lRate):
         # Number of input, hidden and output nodes
